@@ -1,8 +1,9 @@
 import React, { Component } from "react";
+import "./style.css";
 
 class Header extends Component {
   render() {
-    return <div>Header</div>;
+    return <header className="header">我的订单</header>;
   }
 }
 
