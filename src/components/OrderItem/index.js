@@ -6,7 +6,8 @@ class OrderItem extends Component {
     super(props);
     this.state = {
       editing: false,
-      stars: 0,
+      stars: props.data.stars || 0,
+      comment: props.data.comment || "",
     };
   }
   render() {
@@ -27,7 +28,10 @@ class OrderItem extends Component {
                   已评价
                 </button>
               ) : (
-                <button className="orderItem__btn orderItem__btn--red">
+                <button
+                  className="orderItem__btn orderItem__btn--red"
+                  onClick={this.handleOpenEditArea}
+                >
                   评价
                 </button>
               )}
@@ -41,10 +45,24 @@ class OrderItem extends Component {
   renderEditArea() {
     return (
       <div className="orderItem__commentContainer">
-        <textarea className="orderItem__comment"></textarea>
+        <textarea
+          onChange={this.handleCommentChange}
+          value={this.state.comment}
+          className="orderItem__comment"
+        ></textarea>
         {this.renderStars()}
-        <button className="orderItem__btn orderItem__btn--red">提交</button>
-        <button className="orderItem__btn orderItem__btn--grey">取消</button>
+        <button
+          className="orderItem__btn orderItem__btn--red"
+          onClick={this.handleSubmitComment}
+        >
+          提交
+        </button>
+        <button
+          className="orderItem__btn orderItem__btn--grey"
+          onClick={this.handleCancelComment}
+        >
+          取消
+        </button>
       </div>
     );
   }
@@ -54,12 +72,57 @@ class OrderItem extends Component {
     return (
       <div>
         {[1, 2, 3, 4, 5].map((item, index) => {
-          const light = stars >= item ? "orderItem__star--light" : "";
-          return <span key={index}>★</span>;
+          const lightClass = stars >= item ? "orderItem__star--light" : "";
+          return (
+            <span
+              className={"orderItem__star" + lightClass}
+              key={index}
+              onClick={this.handleClickStars.bind(this, item)}
+            >
+              ★
+            </span>
+          );
         })}
       </div>
     );
   }
+
+  handleOpenEditArea = () => {
+    this.setState({
+      editing: true,
+    });
+  };
+
+  handleCommentChange = (e) => {
+    this.setState({
+      comment: e.target.value,
+    });
+  };
+
+  handleClickStars = (stars) => {
+    this.setState({
+      stars: stars,
+    });
+  };
+
+  handleCancelComment = () => {
+    this.setState({
+      editing: false,
+      stars: this.props.data.stars || 0,
+      comment: this.props.data.comment || "",
+    });
+  };
+
+  handleSubmitComment = () => {
+    const { id } = this.props.data;
+    const { comment, stars } = this.state;
+
+    this.setState({
+      editing: false,
+    });
+
+    this.props.onSubmit(id, comment, stars);
+  };
 }
 
 export default OrderItem;

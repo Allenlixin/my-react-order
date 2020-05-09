@@ -8,7 +8,7 @@ class OrderList extends Component {
   }
 
   componentDidMount() {
-    fetch("/public/mock/orders.json").then((res) => {
+    fetch("/mock/orders.json").then((res) => {
       if (res.ok) {
         res.json().then((data) => {
           this.setState({
@@ -23,11 +23,32 @@ class OrderList extends Component {
     return (
       <div>
         {this.state.data.map((item) => {
-          return <OrderItem key={item.id} data={item}></OrderItem>;
+          return (
+            <OrderItem
+              key={item.id}
+              data={item}
+              onSubmit={this.handleSubmit}
+            ></OrderItem>
+          );
         })}
       </div>
     );
   }
+  handleSubmit = (id, comment, stars) => {
+    const newData = this.state.data.map((item) => {
+      return item.id === id
+        ? {
+            ...item,
+            comment,
+            stars,
+            ifCommented: true,
+          }
+        : item;
+    });
+    this.setState({
+      data: newData,
+    });
+  };
 }
 
 export default OrderList;
